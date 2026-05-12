@@ -1,0 +1,1451 @@
+<!-- @format -->
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="IT Club SMK Muhammadiyah 2 Cileungsi – Wadah pengembangan teknologi, networking, programming, dan kreativitas digital."
+    />
+    <meta name="theme-color" content="#0F172A" />
+
+    <title>IT Club – SMK Muhammadiyah 2 Cileungsi</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/icons/favicon.png" />
+    <link rel="apple-touch-icon" href="assets/icons/favicon.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN — MUST load before tailwind.config script -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- AOS Animation -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+
+    <script>
+      // Guard: wait for tailwind global to be available (handles edge cases in some live-servers)
+      (function applyTailwindConfig() {
+        var config = {
+          theme: {
+            extend: {
+              colors: {
+                primary: "#0F172A",
+                secondary: "#1E3A5F",
+                accent: "#2563EB",
+                softblue: "#3B82F6",
+                dark: "#111827",
+                light: "#F8FAFC",
+                muted: "#94A3B8",
+              },
+              fontFamily: {
+                heading: ["Poppins", "sans-serif"],
+                body: ["Inter", "sans-serif"],
+                mono: ["JetBrains Mono", "monospace"],
+              },
+            },
+          },
+        };
+        if (typeof tailwind !== "undefined") {
+          tailwind.config = config;
+        } else {
+          // Fallback: retry once DOM is ready
+          document.addEventListener("DOMContentLoaded", function () {
+            if (typeof tailwind !== "undefined") tailwind.config = config;
+          });
+        }
+      })();
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body class="bg-primary text-light font-body overflow-x-hidden">
+    <!-- ═══════════════════ LOADING SCREEN ═══════════════════ -->
+    <div
+      id="loading-screen"
+      role="status"
+      aria-label="Memuat halaman"
+      class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-primary"
+    >
+      <div class="loader-ring" aria-hidden="true"></div>
+      <div class="mt-6 text-center">
+        <p class="font-mono text-accent text-sm tracking-widest animate-pulse">
+          INITIALIZING SYSTEM
+        </p>
+        <p class="font-heading text-2xl font-bold text-light mt-2">IT Club</p>
+      </div>
+      <div
+        class="mt-6 w-48 h-1 bg-white/10 rounded-full overflow-hidden"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+        aria-labelledby="loading-percent"
+      >
+        <div
+          id="loading-bar"
+          class="h-full bg-accent rounded-full transition-all duration-300"
+          style="width: 0%"
+        ></div>
+      </div>
+      <p id="loading-percent" class="mt-2 font-mono text-xs text-muted">0%</p>
+    </div>
+
+    <!-- ═══════════════════ TOAST NOTIFICATION ═══════════════════ -->
+    <div
+      id="toast"
+      class="fixed bottom-6 right-6 z-50 hidden"
+      role="alert"
+      aria-live="polite"
+    >
+      <div
+        class="glass-card flex items-center gap-3 px-5 py-3 rounded-xl border border-accent/30 shadow-lg shadow-accent/10"
+      >
+        <i class="fa-solid fa-circle-check text-accent" aria-hidden="true"></i>
+        <span id="toast-msg" class="text-sm font-body text-light"></span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ MUSIC CONTROL ═══════════════════ -->
+    <button
+      id="music-btn"
+      type="button"
+      title="Toggle Musik Latar"
+      aria-label="Toggle musik latar"
+      class="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full glass-card border border-accent/30 flex items-center justify-center text-accent hover:text-light hover:bg-accent/20 transition-all duration-300 shadow-lg shadow-accent/10"
+    >
+      <i
+        id="music-icon"
+        class="fa-solid fa-music text-sm"
+        aria-hidden="true"
+      ></i>
+    </button>
+    <audio id="bg-music" loop preload="none">
+      <source src="assets/audio/bg-music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- ═══════════════════ NETWORK CANVAS BACKGROUND ═══════════════════ -->
+    <canvas
+      id="network-canvas"
+      aria-hidden="true"
+      class="fixed inset-0 z-0 pointer-events-none opacity-30"
+    ></canvas>
+
+    <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+    <header>
+      <nav
+        id="navbar"
+        aria-label="Navigasi utama"
+        class="fixed top-0 left-0 right-0 z-40 transition-all duration-500"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16 lg:h-20">
+            <!-- Logo -->
+            <a
+              href="#home"
+              class="flex items-center gap-3 group"
+              aria-label="IT Club - Kembali ke beranda"
+            >
+              <div
+                class="w-10 h-10 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center group-hover:bg-accent/40 transition-all duration-300"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-network-wired text-accent text-lg"></i>
+              </div>
+              <div>
+                <p
+                  class="font-heading font-bold text-light text-sm leading-none"
+                >
+                  IT Club
+                </p>
+                <p class="font-mono text-[10px] text-muted leading-none mt-0.5">
+                  SMK MUH 2 Cileungsi
+                </p>
+              </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <ul class="hidden lg:flex items-center gap-1" role="list">
+              <li><a href="#home" class="nav-link">Home</a></li>
+              <li><a href="#kegiatan" class="nav-link">Kegiatan</a></li>
+              <li><a href="#gallery" class="nav-link">Gallery</a></li>
+              <li><a href="#video" class="nav-link">Video</a></li>
+              <li><a href="#prestasi" class="nav-link">Prestasi</a></li>
+              <li><a href="#about" class="nav-link">About</a></li>
+              <li><a href="#komentar" class="nav-link">Komentar</a></li>
+            </ul>
+
+            <!-- CTA + Hamburger -->
+            <div class="flex items-center gap-3">
+              <a
+                href="https://wa.me/+6282175342506"
+                target="_blank"
+                class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-white text-sm font-medium font-heading hover:bg-softblue transition-all duration-300 shadow-lg shadow-accent/25"
+              >
+                <i
+                  class="fa-solid fa-paper-plane text-xs"
+                  aria-hidden="true"
+                ></i>
+                Join Us
+              </a>
+              <button
+                id="hamburger"
+                type="button"
+                aria-label="Buka menu navigasi"
+                aria-expanded="false"
+                aria-controls="mobile-menu"
+                class="lg:hidden w-10 h-10 rounded-lg glass-card border border-white/10 flex items-center justify-center text-light"
+              >
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="hidden lg:hidden glass-card border-t border-white/10 mx-4 mb-2 rounded-xl overflow-hidden"
+        >
+          <ul class="flex flex-col p-4 gap-1" role="list">
+            <li><a href="#home" class="mobile-nav-link">Home</a></li>
+            <li><a href="#kegiatan" class="mobile-nav-link">Kegiatan</a></li>
+            <li><a href="#gallery" class="mobile-nav-link">Gallery</a></li>
+            <li><a href="#video" class="mobile-nav-link">Video</a></li>
+            <li><a href="#prestasi" class="mobile-nav-link">Prestasi</a></li>
+            <li><a href="#about" class="mobile-nav-link">About</a></li>
+            <li><a href="#komentar" class="mobile-nav-link">Komentar</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+    <main>
+      <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
+      <section
+        id="home"
+        aria-label="Beranda"
+        class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden"
+      >
+        <!-- Grid pattern overlay -->
+        <div
+          class="absolute inset-0 grid-pattern opacity-10 z-0"
+          aria-hidden="true"
+        ></div>
+        <!-- Radial glow -->
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 sm:w-[600px] h-72 sm:h-[600px] bg-accent/10 rounded-full blur-3xl z-0 pointer-events-none"
+          aria-hidden="true"
+        ></div>
+
+        <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
+          <!-- Badge -->
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-accent/30 mb-8 text-xs font-mono text-accent animate-fade-in-down"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-accent animate-pulse"
+              aria-hidden="true"
+            ></span>
+            SMK Muhammadiyah 2 Cileungsi · TKJ Division
+          </div>
+
+          <!-- Main Heading -->
+          <h1
+            class="font-heading font-black text-4xl sm:text-6xl lg:text-8xl text-light leading-none mb-4 animate-fade-in"
+          >
+            WELCOME TO<br />
+            <span class="text-glow text-accent">IT CLUB</span>
+          </h1>
+
+          <!-- Typing text -->
+          <p
+            class="font-mono text-muted text-sm sm:text-base mb-6 h-6"
+            aria-live="polite"
+          >
+            <span class="text-accent" aria-hidden="true">$ </span
+            ><span id="typing-text"></span
+            ><span class="cursor-blink" aria-hidden="true">|</span>
+          </p>
+
+          <!-- Description -->
+          <p
+            class="font-body text-muted text-sm sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up"
+          >
+            Wadah pengembangan teknologi, networking, programming, dan
+            kreativitas digital siswa SMK Muhammadiyah 2 Cileungsi.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div
+            class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up"
+          >
+            <a
+              href="#kegiatan"
+              class="btn-primary w-full sm:w-auto justify-center"
+            >
+              <i class="fa-solid fa-compass mr-2" aria-hidden="true"></i>
+              Explore
+            </a>
+            <a
+              href="https://wa.me/+6282175342506"
+              target="_blank"
+              class="btn-secondary w-full sm:w-auto justify-center"
+            >
+              <i class="fa-solid fa-user-plus mr-2" aria-hidden="true"></i> Join
+              Us
+            </a>
+          </div>
+
+          <!-- Stats Row -->
+          <div
+            class="grid grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16 max-w-2xl mx-auto"
+            role="list"
+            aria-label="Statistik IT Club"
+          >
+            <div class="text-center" role="listitem">
+              <p
+                class="font-heading font-black text-2xl sm:text-3xl text-accent counter"
+                data-target="50"
+              >
+                0
+              </p>
+              <p class="font-body text-[10px] sm:text-xs text-muted mt-1">
+                Anggota Aktif
+              </p>
+            </div>
+            <div class="text-center border-x border-white/10" role="listitem">
+              <p
+                class="font-heading font-black text-2xl sm:text-3xl text-accent counter"
+                data-target="20"
+              >
+                0
+              </p>
+              <p class="font-body text-[10px] sm:text-xs text-muted mt-1">
+                Prestasi Diraih
+              </p>
+            </div>
+            <div class="text-center" role="listitem">
+              <p
+                class="font-heading font-black text-2xl sm:text-3xl text-accent counter"
+                data-target="15"
+              >
+                0
+              </p>
+              <p class="font-body text-[10px] sm:text-xs text-muted mt-1">
+                Program Kegiatan
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <!-- <div
+          class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce"
+          aria-hidden="true"
+        >
+          <p class="font-mono text-[10px] text-muted tracking-widest">SCROLL</p>
+          <i class="fa-solid fa-chevron-down text-accent text-xs"></i>
+        </div> -->
+      </section>
+
+      <!-- ═══════════════════ KEGIATAN SECTION ═══════════════════ -->
+      <section
+        id="kegiatan"
+        aria-labelledby="kegiatan-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="section-header" data-aos="fade-up">
+            <p class="section-tag">Program Unggulan</p>
+            <h2 id="kegiatan-title" class="section-title">
+              Program & <span class="text-accent">Kegiatan</span>
+            </h2>
+            <p class="section-desc">
+              Beragam program yang dirancang untuk meningkatkan kompetensi
+              digital siswa
+            </p>
+          </div>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-10 sm:mt-14"
+          >
+            <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="0"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-brands fa-html5"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Workshop Web Development
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Pelatihan membangun website modern menggunakan HTML, CSS,
+                JavaScript.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Setiap Bulan</time>
+              </div>
+            </article>
+
+            <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-solid fa-network-wired"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Pelatihan Cisco & Networking
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Konfigurasi router, switch, dan jaringan komputer.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Dwi Mingguan</time>
+              </div>
+            </article>
+
+            <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-solid fa-pen-ruler"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Desain UI/UX
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Belajar desain antarmuka yang intuitif dan estetis menggunakan
+                Figma, Canva, dan prinsip desain modern.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Mingguan</time>
+              </div>
+            </article>
+
+            <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="0"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-solid fa-code"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Game Dev Scratch
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Coding game dengan Scratch adalah aktivitas kreatif di mana kita
+                membuat permainan interaktif menggunakan bahasa pemrograman
+                visual berbasis blok.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Per Semester</time>
+              </div>
+            </article>
+
+            <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-solid fa-share-nodes"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Sharing Technology
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Sesi berbagi pengetahuan teknologi terbaru, trend digital,
+                keamanan siber, dan perkembangan AI bersama anggota.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Mingguan</time>
+              </div>
+            </article>
+
+            <!-- FIX: fa-hands-helping dihapus di FA6 → ganti fa-hand-holding-heart -->
+            <!-- <article
+              class="activity-card"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div class="activity-icon" aria-hidden="true">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+              </div>
+              <h3
+                class="font-heading font-semibold text-light text-base sm:text-lg mt-4 mb-2"
+              >
+                Pengabdian Masyarakat
+              </h3>
+              <p class="font-body text-muted text-sm leading-relaxed">
+                Berbagi ilmu teknologi kepada masyarakat sekitar, literasi
+                digital, dan pelatihan komputer dasar untuk warga.
+              </p>
+              <div
+                class="mt-4 flex items-center gap-2 text-xs font-mono text-accent"
+              >
+                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                <time>Tahunan</time>
+              </div>
+            </article> -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ GALLERY SECTION ═══════════════════ -->
+      <section
+        id="gallery"
+        aria-labelledby="gallery-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/20 to-transparent pointer-events-none"
+          aria-hidden="true"
+        ></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="section-header" data-aos="fade-up">
+            <p class="section-tag">Dokumentasi</p>
+            <h2 id="gallery-title" class="section-title">
+              Galeri <span class="text-accent">Kegiatan</span>
+            </h2>
+            <p class="section-desc">
+              Momen-momen berharga kegiatan IT Club yang penuh semangat dan
+              kreativitas
+            </p>
+          </div>
+
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mt-10 sm:mt-14"
+            role="list"
+            aria-label="Foto kegiatan IT Club"
+          >
+            <figure
+              class="gallery-item col-span-2 row-span-2"
+              data-aos="fade-up"
+              data-aos-delay="0"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-52 sm:h-72 md:h-full min-h-[220px]"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto Workshop Web Dev"
+              >
+                <i
+                  class="fa-solid fa-image text-3xl sm:text-4xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-1.jpg
+                </p>
+                <figcaption class="gallery-tag">Workshop Web Dev</figcaption>
+              </div>
+            </figure>
+
+            <figure
+              class="gallery-item"
+              data-aos="fade-up"
+              data-aos-delay="100"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-36 sm:h-40"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto Networking Lab"
+              >
+                <i
+                  class="fa-solid fa-image text-2xl sm:text-3xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-2.jpg
+                </p>
+                <figcaption class="gallery-tag">Networking Lab</figcaption>
+              </div>
+            </figure>
+
+            <figure
+              class="gallery-item"
+              data-aos="fade-up"
+              data-aos-delay="150"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-36 sm:h-40"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto UI/UX Design"
+              >
+                <i
+                  class="fa-solid fa-image text-2xl sm:text-3xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-3.jpg
+                </p>
+                <figcaption class="gallery-tag">UI/UX Design</figcaption>
+              </div>
+            </figure>
+
+            <figure
+              class="gallery-item"
+              data-aos="fade-up"
+              data-aos-delay="200"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-36 sm:h-40"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto Hackathon"
+              >
+                <i
+                  class="fa-solid fa-image text-2xl sm:text-3xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-4.jpg
+                </p>
+                <figcaption class="gallery-tag">Game Dev Scratch</figcaption>
+              </div>
+            </figure>
+
+            <!-- <figure
+              class="gallery-item"
+              data-aos="fade-up"
+              data-aos-delay="250"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-36 sm:h-40"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto Community Service"
+              >
+                <i
+                  class="fa-solid fa-image text-2xl sm:text-3xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-5.jpg
+                </p>
+                <figcaption class="gallery-tag">Community Service</figcaption>
+              </div>
+            </figure> -->
+
+            <figure
+              class="gallery-item"
+              data-aos="fade-up"
+              data-aos-delay="300"
+              role="listitem"
+            >
+              <div
+                class="gallery-placeholder h-36 sm:h-40"
+                tabindex="0"
+                role="button"
+                aria-label="Lihat foto Sharing Tech"
+              >
+                <i
+                  class="fa-solid fa-image text-2xl sm:text-3xl text-white/20"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-white/30 text-xs mt-2 font-mono">
+                  gallery-6.jpg
+                </p>
+                <figcaption class="gallery-tag">Sharing Tech</figcaption>
+              </div>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ VIDEO SECTION ═══════════════════ -->
+      <section
+        id="video"
+        aria-labelledby="video-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="section-header" data-aos="fade-up">
+            <p class="section-tag">Dokumentasi Visual</p>
+            <h2 id="video-title" class="section-title">
+              Video <span class="text-accent">Dokumentasi</span>
+            </h2>
+            <p class="section-desc">
+              Rekam jejak kegiatan IT Club dalam format video yang menginspirasi
+            </p>
+          </div>
+
+          <div
+            class="mt-10 sm:mt-14 grid gap-4 sm:gap-6"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <!-- Main Video Embed -->
+            <div
+              class="glass-card rounded-2xl border border-white/10 overflow-hidden"
+            >
+              <div class="video-embed-wrapper">
+                <iframe
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                  title="IT Club – Video Dokumentasi Utama"
+                  frameborder="0"
+                  allow="
+                    accelerometer;
+                    autoplay;
+                    clipboard-write;
+                    encrypted-media;
+                    gyroscope;
+                    picture-in-picture;
+                  "
+                  allowfullscreen
+                  loading="lazy"
+                  class="video-embed-frame"
+                >
+                </iframe>
+              </div>
+              <div class="p-4">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Video Profil IT Club 2024
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Perjalanan dan pencapaian IT Club SMK Muhammadiyah 2 Cileungsi
+                </p>
+              </div>
+            </div>
+
+            <!-- Video Cards Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <article
+                class="glass-card rounded-xl border border-white/10 overflow-hidden hover:border-accent/30 transition-all duration-300"
+              >
+                <div
+                  class="video-thumb"
+                  role="img"
+                  aria-label="Thumbnail Workshop Web Dev 2024"
+                >
+                  <div class="play-btn" aria-hidden="true">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                  </div>
+                  <span
+                    class="video-duration"
+                    aria-label="Durasi 3 menit 45 detik"
+                    >03:45</span
+                  >
+                </div>
+                <div class="p-3">
+                  <p class="font-heading font-medium text-sm text-light">
+                    Workshop Web Dev 2024
+                  </p>
+                  <p class="font-body text-xs text-muted mt-0.5">
+                    Highlights pelatihan web development
+                  </p>
+                </div>
+              </article>
+              <article
+                class="glass-card rounded-xl border border-white/10 overflow-hidden hover:border-accent/30 transition-all duration-300"
+              >
+                <div
+                  class="video-thumb"
+                  role="img"
+                  aria-label="Thumbnail Hackathon Internal 2024"
+                >
+                  <div class="play-btn" aria-hidden="true">
+                    <i class="fa-solid fa-play text-white text-xl ml-1"></i>
+                  </div>
+                  <span
+                    class="video-duration"
+                    aria-label="Durasi 5 menit 12 detik"
+                    >05:12</span
+                  >
+                </div>
+                <div class="p-3">
+                  <p class="font-heading font-medium text-sm text-light">
+                    Networking Lab
+                  </p>
+                  <p class="font-body text-xs text-muted mt-0.5">
+                    Pengajaran konfigurasi network dalam lab.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ PRESTASI SECTION ═══════════════════ -->
+      <section
+        id="prestasi"
+        aria-labelledby="prestasi-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent pointer-events-none"
+          aria-hidden="true"
+        ></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="section-header" data-aos="fade-up">
+            <p class="section-tag">Pencapaian</p>
+            <h2 id="prestasi-title" class="section-title">
+              Prestasi <span class="text-accent">Anggota</span>
+            </h2>
+            <p class="section-desc">
+              Bangga dengan setiap prestasi yang telah diraih oleh anggota IT
+              Club
+            </p>
+          </div>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-10 sm:mt-14"
+          >
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="0"
+            >
+              <div class="prestasi-badge gold" aria-label="Medali Emas">
+                <i class="fa-solid fa-trophy" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Juara 1 – LKS Jaringan Komputer
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Tingkat Kabupaten Bogor · <time datetime="2024">2024</time>
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="100"
+            >
+              <div class="prestasi-badge silver" aria-label="Medali Perak">
+                <i class="fa-solid fa-medal" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Juara 2 – Web Design Competition
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Tingkat Provinsi Jawa Barat ·
+                  <time datetime="2023">2023</time>
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="200"
+            >
+              <div class="prestasi-badge bronze" aria-label="Medali Perunggu">
+                <i class="fa-solid fa-award" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Juara 3 – IT Olympiad
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Tingkat Nasional · <time datetime="2023">2023</time>
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="100"
+            >
+              <div class="prestasi-badge gold" aria-label="Penghargaan">
+                <i class="fa-solid fa-star" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Best Innovative Project
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Hackathon SMK Se-Bogor · <time datetime="2024">2024</time>
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="200"
+            >
+              <div class="prestasi-badge silver" aria-label="Sertifikasi">
+                <i class="fa-solid fa-certificate" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Cisco Certified Students
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  CCNA Certification · <time datetime="2024">2024</time>
+                </p>
+              </div>
+            </article>
+
+            <article
+              class="prestasi-card"
+              data-aos="zoom-in"
+              data-aos-delay="300"
+            >
+              <div class="prestasi-badge gold" aria-label="Penghargaan terbaik">
+                <i class="fa-solid fa-crown" aria-hidden="true"></i>
+              </div>
+              <div class="ml-4 flex-1">
+                <p class="font-heading font-semibold text-light text-sm">
+                  Best IT Club Award
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  SMK Muhammadiyah Network · <time datetime="2024">2024</time>
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ ABOUT SECTION ═══════════════════ -->
+      <section
+        id="about"
+        aria-labelledby="about-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+          >
+            <!-- Left: Text -->
+            <div data-aos="fade-right">
+              <p class="section-tag mb-4">Siapa Kami</p>
+              <h2
+                id="about-title"
+                class="font-heading font-black text-3xl sm:text-4xl lg:text-5xl text-light leading-tight mb-6"
+              >
+                Tentang <span class="text-accent">IT Club</span>
+              </h2>
+              <p
+                class="font-body text-muted leading-relaxed mb-4 text-sm sm:text-base"
+              >
+                IT Club merupakan organisasi teknologi di SMK Muhammadiyah 2
+                Cileungsi yang fokus pada pengembangan skill siswa di bidang
+                jaringan komputer, web development, desain digital, dan
+                teknologi informasi.
+              </p>
+              <p
+                class="font-body text-muted leading-relaxed mb-6 text-sm sm:text-base"
+              >
+                Kami mengutamakan kreativitas, teamwork, dan inovasi. Setiap
+                anggota didorong untuk terus belajar, berkolaborasi, dan
+                berkontribusi nyata dalam dunia teknologi digital.
+              </p>
+
+              <!-- Values -->
+              <div
+                class="grid grid-cols-2 gap-3 sm:gap-4"
+                role="list"
+                aria-label="Nilai-nilai IT Club"
+              >
+                <div class="value-pill" role="listitem">
+                  <i
+                    class="fa-solid fa-lightbulb text-accent"
+                    aria-hidden="true"
+                  ></i>
+                  Inovasi
+                </div>
+                <div class="value-pill" role="listitem">
+                  <i
+                    class="fa-solid fa-users text-accent"
+                    aria-hidden="true"
+                  ></i>
+                  Teamwork
+                </div>
+                <div class="value-pill" role="listitem">
+                  <i
+                    class="fa-solid fa-shield-halved text-accent"
+                    aria-hidden="true"
+                  ></i>
+                  Integritas
+                </div>
+                <div class="value-pill" role="listitem">
+                  <i
+                    class="fa-solid fa-rocket text-accent"
+                    aria-hidden="true"
+                  ></i>
+                  Kreativitas
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Info Cards -->
+            <div data-aos="fade-left" class="grid grid-cols-2 gap-3 sm:gap-4">
+              <div class="about-info-card col-span-2">
+                <i
+                  class="fa-solid fa-location-dot text-accent text-lg mb-3"
+                  aria-hidden="true"
+                ></i>
+                <p class="font-heading font-semibold text-light text-sm">
+                  Lokasi
+                </p>
+                <address class="font-body text-muted text-xs mt-1 not-italic">
+                  JL. AKSES DESA DAYEUH NO.97B. CILEUNGSI- BOGOR, Cileungsi, Kec. Cileungsi, Kab. Bogor, Jawa Barat.
+                </address>
+              </div>
+              <div class="about-info-card">
+                <i
+                  class="fa-solid fa-calendar text-accent text-lg mb-3"
+                  aria-hidden="true"
+                ></i>
+                <p class="font-heading font-semibold text-light text-sm">
+                  Berdiri Sejak
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  <time datetime="2018">2018</time> · 6+ Tahun Berkarya
+                </p>
+              </div>
+              <div class="about-info-card">
+                <i
+                  class="fa-solid fa-user-group text-accent text-lg mb-3"
+                  aria-hidden="true"
+                ></i>
+                <p class="font-heading font-semibold text-light text-sm">
+                  Total Anggota
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  50+ Siswa Aktif <time datetime="2024">2024</time>
+                </p>
+              </div>
+              <div class="about-info-card">
+                <i
+                  class="fa-solid fa-book-open text-accent text-lg mb-3"
+                  aria-hidden="true"
+                ></i>
+                <p class="font-heading font-semibold text-light text-sm">
+                  Program Studi
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  Teknik Komputer & Jaringan (TKJ)
+                </p>
+              </div>
+              <div class="about-info-card">
+                <i
+                  class="fa-brands fa-instagram text-accent text-lg mb-3"
+                  aria-hidden="true"
+                ></i>
+                <p class="font-heading font-semibold text-light text-sm">
+                  Media Sosial
+                </p>
+                <p class="font-body text-muted text-xs mt-1">
+                  @itclubmuda
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Struktur Pengurus ── -->
+          <div class="mt-16 sm:mt-24">
+            <div class="section-header" data-aos="fade-up">
+              <p class="section-tag">Kepengurusan</p>
+              <h2 class="section-title">
+                Struktur <span class="text-accent">Pengurus</span>
+              </h2>
+              <p class="section-desc">
+                Tim yang berdedikasi menjalankan roda organisasi IT Club
+              </p>
+            </div>
+
+            <!-- Pembina -->
+            <div
+              class="flex flex-col items-center mt-10 sm:mt-12 mb-8"
+              data-aos="fade-up"
+              data-aos-delay="0"
+            >
+              <div class="team-card-main">
+                <div class="team-avatar-ring">
+                  <div class="team-avatar-inner">
+                    <i
+                      class="fa-solid fa-user-tie text-3xl text-accent"
+                      aria-hidden="true"
+                    ></i>
+                  </div>
+                </div>
+                <p class="font-heading font-bold text-light text-base mt-3">
+                  Andri Ahmad Sobari S.Kom
+                </p>
+                <p class="font-mono text-accent text-xs mt-1">
+                  Pembimbing IT Club
+                </p>
+                <p class="font-body text-muted text-xs mt-2">
+                  Guru TKJ & Pembimbing Organisasi
+                </p>
+              </div>
+            </div>
+
+            <div class="tree-connector" aria-hidden="true"></div>
+
+            <!-- Ketua & Wakil -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 max-w-xl mx-auto gap-4 mb-8"
+              data-aos="fade-up"
+              data-aos-delay="100"
+            >
+              <div class="team-card">
+                <div class="team-avatar-sm" aria-hidden="true">
+                  <i class="fa-solid fa-user text-accent text-xl"></i>
+                </div>
+                <p class="font-heading font-semibold text-light text-sm mt-3">
+                  Ketua IT Club
+                </p>
+                <p class="font-mono text-accent text-xs mt-1">Leadership</p>
+              </div>
+              <div class="team-card">
+                <div class="team-avatar-sm" aria-hidden="true">
+                  <i class="fa-solid fa-user text-accent text-xl"></i>
+                </div>
+                <p class="font-heading font-semibold text-light text-sm mt-3">
+                  Wakil Ketua
+                </p>
+                <p class="font-mono text-accent text-xs mt-1">
+                  Vice Leadership
+                </p>
+              </div>
+            </div>
+
+            <div class="tree-connector" aria-hidden="true"></div>
+
+            <!-- Divisi -->
+            <div
+              class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto"
+              data-aos="fade-up"
+              data-aos-delay="200"
+            >
+              <div class="team-card-sm">
+                <i
+                  class="fa-solid fa-code text-accent mb-2"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-xs font-heading text-light">Div. Programming</p>
+              </div>
+              <div class="team-card-sm">
+                <i
+                  class="fa-solid fa-network-wired text-accent mb-2"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-xs font-heading text-light">Div. Networking</p>
+              </div>
+              <div class="team-card-sm">
+                <i
+                  class="fa-solid fa-pen-nib text-accent mb-2"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-xs font-heading text-light">Div. Design</p>
+              </div>
+              <div class="team-card-sm">
+                <i
+                  class="fa-solid fa-bullhorn text-accent mb-2"
+                  aria-hidden="true"
+                ></i>
+                <p class="text-xs font-heading text-light">
+                  Div. Media
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ KOMENTAR SECTION ═══════════════════ -->
+      <section
+        id="komentar"
+        aria-labelledby="komentar-title"
+        class="relative py-16 sm:py-24 z-10"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/20 to-transparent pointer-events-none"
+          aria-hidden="true"
+        ></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="section-header" data-aos="fade-up">
+            <p class="section-tag">Bergabung</p>
+            <h2 id="komentar-title" class="section-title">
+              Kritik & <span class="text-accent">Saran</span>
+            </h2>
+            <p class="section-desc">
+              Sampaikan pesan, saran, atau minat bergabung dengan IT Club
+            </p>
+          </div>
+
+          <div
+            class="mt-10 sm:mt-14 glass-card rounded-3xl border border-white/10 p-5 sm:p-10"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div id="comment-form">
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6"
+              >
+                <div>
+                  <label
+                    class="block font-body text-muted text-sm mb-2"
+                    for="nama"
+                    >Nama Lengkap</label
+                  >
+                  <input
+                    id="nama"
+                    type="text"
+                    placeholder="Masukkan nama kamu..."
+                    autocomplete="name"
+                    class="input-field"
+                    aria-required="true"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-body text-muted text-sm mb-2"
+                    for="email"
+                    >Email <span class="text-muted/60">(opsional)</span></label
+                  >
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="contoh@email.com"
+                    autocomplete="email"
+                    class="input-field"
+                  />
+                </div>
+              </div>
+              <div class="mb-4 sm:mb-6">
+                <label
+                  class="block font-body text-muted text-sm mb-2"
+                  for="pesan"
+                  >Pesan / Saran</label
+                >
+                <textarea
+                  id="pesan"
+                  rows="5"
+                  placeholder="Tulis pesan, saran, atau kesan kamu di sini..."
+                  class="input-field resize-none"
+                  aria-required="true"
+                ></textarea>
+              </div>
+              <button
+                id="submit-btn"
+                type="button"
+                class="w-full btn-primary justify-center py-3 sm:py-4 text-sm sm:text-base"
+              >
+                <i class="fa-solid fa-paper-plane mr-2" aria-hidden="true"></i>
+                Kirim Pesan
+              </button>
+            </div>
+
+            <!-- Comments Display -->
+            <div
+              id="comments-list"
+              class="mt-6 sm:mt-8 space-y-4"
+              aria-live="polite"
+              aria-label="Daftar komentar"
+            >
+              <!-- Sample comment -->
+              <div class="comment-bubble">
+                <div class="flex items-center gap-3 mb-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0"
+                    aria-hidden="true"
+                  >
+                    <i class="fa-solid fa-user text-accent text-xs"></i>
+                  </div>
+                  <div>
+                    <p class="font-heading font-semibold text-light text-sm">
+                      Anggota IT Club
+                    </p>
+                    <p class="font-mono text-muted text-xs">
+                      <time>Baru saja</time>
+                    </p>
+                  </div>
+                </div>
+                <p class="font-body text-muted text-sm">
+                  IT Club terbaik! Banyak ilmu yang kudapat dari workshop dan
+                  pelatihan di sini. Terus semangat! 🚀
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- end main -->
+
+    <!-- ═══════════════════ FOOTER ═══════════════════ -->
+    <footer
+      class="relative z-10 border-t border-white/10"
+      aria-label="Footer IT Club"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10"
+        >
+          <!-- Brand -->
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div
+                class="w-10 h-10 rounded-xl bg-accent/20 border border-accent/30 flex items-center justify-center"
+                aria-hidden="true"
+              >
+                <i class="fa-solid fa-network-wired text-accent"></i>
+              </div>
+              <div>
+                <p class="font-heading font-bold text-light text-sm">IT Club</p>
+                <p class="font-mono text-[10px] text-muted">
+                  SMK Muhammadiyah 2 Cileungsi
+                </p>
+              </div>
+            </div>
+            <p class="font-body text-muted text-sm leading-relaxed">
+              Wadah pengembangan teknologi, networking, dan kreativitas digital
+              siswa TKJ.
+            </p>
+          </div>
+
+          <!-- Links -->
+          <nav aria-label="Navigasi footer">
+            <p class="font-heading font-semibold text-light text-sm mb-4">
+              Navigasi
+            </p>
+            <ul class="space-y-2" role="list">
+              <li><a href="#home" class="footer-link">Home</a></li>
+              <li>
+                <a href="#kegiatan" class="footer-link">Program Kegiatan</a>
+              </li>
+              <li><a href="#gallery" class="footer-link">Galeri</a></li>
+              <li><a href="#prestasi" class="footer-link">Prestasi</a></li>
+              <li><a href="#about" class="footer-link">Tentang Kami</a></li>
+            </ul>
+          </nav>
+
+          <!-- Social -->
+          <div>
+            <p class="font-heading font-semibold text-light text-sm mb-4">
+              Media Sosial
+            </p>
+            <div class="flex gap-3 flex-wrap">
+              <a
+                href="https://www.instagram.com/itclubmuda?igsh=bWI2aGg4MjN1d2k3"
+                class="social-btn"
+                title="Instagram IT Club"
+                target="_blank"
+                aria-label="Kunjungi Instagram IT Club"
+                ><i class="fa-brands fa-instagram" aria-hidden="true"></i
+              ></a>
+              <a
+                href="https://youtube.com/@itmudacileungsi2381?si=cDSljZRwjKNsF11S"
+                class="social-btn"
+                target="_blank"
+                title="YouTube IT Club"
+                aria-label="Kunjungi YouTube IT Club"
+                ><i class="fa-brands fa-youtube" aria-hidden="true"></i
+              ></a>
+              <a
+                href="https://wa.me/+6282175342506"
+                class="social-btn"
+                target="_blank"
+                title="WhatsApp IT Club"
+                aria-label="Hubungi via WhatsApp"
+                ><i class="fa-brands fa-whatsapp" aria-hidden="true"></i
+              ></a>
+            </div>
+            <address class="font-body text-muted text-xs mt-4 not-italic">
+              <i
+                class="fa-solid fa-envelope text-accent mr-1"
+                aria-hidden="true"
+              ></i>
+              <a
+                href="mailto:kaylamahesta@gmail.com"
+                target="_blank"
+                class="hover:text-accent transition-colors duration-200"
+                >kaylamahesta@gmail.com</a
+              >
+            </address>
+          </div>
+        </div>
+
+        <div
+          class="mt-8 sm:mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <p class="font-body text-muted text-xs text-center sm:text-left">
+            © <time datetime="2024">2024</time> IT Club <span class="text-accent font-semibold">SMK Muhammadiyah 2
+            Cileungsi.</span>
+          </p>
+          <p class="font-mono text-xs text-muted text-center">
+            Dibuat oleh
+            <span class="text-accent font-semibold">Muhamad Fahmi</span> · Built
+            with <span class="text-accent" aria-label="cinta">♥</span> &amp;
+            Tailwind CSS
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+  </body>
+</html>
