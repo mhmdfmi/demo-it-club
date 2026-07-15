@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function toggleMenu(open) {
+  function toggleMenu(open)  {
     if (!hamburger || !mobileMenu) return;
     hamburger.setAttribute("aria-expanded", String(open));
     const icon = hamburger.querySelector("i");
